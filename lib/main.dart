@@ -28,6 +28,31 @@ class TodoListState extends State<TodoList> {
     }
   }
 
+  void _removeTodoItem(int index) {
+    setState(() => _todoItems.removeAt(index));
+  }
+
+  void _promptRemoveTodoItem(int index) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text('Mark "${_todoItems[index]}" as done?'),
+            actions: <Widget>[
+              new FlatButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: new Text('CANCEL')),
+              new FlatButton(
+                  onPressed: () {
+                    _removeTodoItem(index);
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text('MARK AS DONE')),
+            ],
+          );
+        });
+  }
+
   void _pushAddTodoScreen() {
     // Push this page onto the stack
     Navigator.of(context).push(
@@ -53,14 +78,17 @@ class TodoListState extends State<TodoList> {
     return new ListView.builder(
       itemBuilder: (context, index) {
         if (index < _todoItems.length) {
-          return _buildTodoItem(_todoItems[index]);
+          return _buildTodoItem(_todoItems[index], index);
         }
       },
     );
   }
 
-  Widget _buildTodoItem(String todoText) {
-    return new ListTile(title: new Text(todoText));
+  Widget _buildTodoItem(String todoText, int index) {
+    return new ListTile(
+      title: new Text(todoText),
+      onTap: () => _promptRemoveTodoItem(index),
+    );
   }
 
   @override
